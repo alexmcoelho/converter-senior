@@ -14,10 +14,10 @@ public class RecebeCSVRetornaClass {
     private List<String> g7 = new ArrayList<>();
     private List<String> g5 = new ArrayList<>();
 
-    public RecebeCSVRetornaClass(String nameList) {
+    public RecebeCSVRetornaClass() {
 
         // abre um arquivo e cria um file
-        File arquivoCSV = new File("integra.csv");
+        File arquivoCSV = new File("converter.csv");
 
         String[] valoresEntreVirgulas = null;
 
@@ -30,6 +30,12 @@ public class RecebeCSVRetornaClass {
         // variável que armazenará as linhas do arquivo
         String linhasDoArquivo = new String();
 
+        //nome classe
+        String nomeClasse = "";
+
+        //tipo variável
+        String tipoVariavel = "";
+
         //escreve no arquivo
         FileWriter arquivo;
 
@@ -39,8 +45,13 @@ public class RecebeCSVRetornaClass {
             e.printStackTrace();
         }
 
-        // ignora a primeira linha do arquivo
-        leitor.nextLine();
+        linhasDoArquivo = leitor.nextLine();
+
+        // separa os campos entre as virgulas de cada linha
+        valoresEntreVirgulas = linhasDoArquivo.split(";");
+
+        nomeClasse = valoresEntreVirgulas[0];
+        tipoVariavel = valoresEntreVirgulas[1];
 
         // percorre todo o arquivo
         while (leitor.hasNext()) {
@@ -56,33 +67,41 @@ public class RecebeCSVRetornaClass {
         }
 
         //criando class
-        builder.append("import java.util.ArrayList;\r\n")
-                .append("import java.util.List; \r\n\r\n")
-                .append("public class " + nameList + "{ \r\n\r\n")
-                .append("    private List<String> g7 = new ArrayList<>();\r\n")
-                .append("    private List<String> g5 = new ArrayList<>();\r\n\r\n")
-                .append("    public " + nameList + "(){ \r\n");
+        builder.append("package converter;\r\n")
+                .append("import model.EstadoType;\r\n\r\n")
+                .append("public class " + "Converter" + nomeClasse + "{ \r\n\r\n")
+                .append("public static " + tipoVariavel + " converter(EstadoType type) { \r\n")
+                .append("    if (type == null) return null; \r\n")
+                .append("    switch (type) { \r\n");
 
-        for (String string : g7) {
-            builder.append("        g7.add(" + "\"" + string + "\");\r\n");
-        }
-        for (String string : g5) {
-            builder.append("        g5.add(" + "\"" + string + "\");\r\n");
+        for (int i = 0; i < g7.size(); i++) {
+            builder.append("        case " + g7.get(i) + ":\r\n");
+            String retorno = tipoVariavel.equals("Integer") ? g5.get(i) : "\"" + g5.get(i) + "\"";
+                    builder.append("            return " + retorno + "; \r\n");
         }
 
-        builder.append("    } \r\n\r\n")
-                .append("    public String integrates(String text, Boolean g5Forg7) { \r\n")
-                .append("        if(!g5Forg7 && g7.contains(text)){ \r\n")
-                .append("            return g5.get(g7.indexOf(text)); \r\n")
-                .append("        } else if(g5Forg7 && g5.contains(text)){ \r\n")
-                .append("            return g7.get(g5.indexOf(text)); \r\n")
-                .append("        } \r\n")
-                .append("        return null; \r\n")
-                .append("    } \r\n")
-                .append("}");
+        builder.append("        default: \r\n")
+                .append("            return null; \r\n")
+                .append("} \r\n")
+                .append("} \r\n");
+
+        builder.append("public static " + nomeClasse + " converter(" + tipoVariavel + " type) {")
+                .append("if (type == null) return null;")
+                .append("switch (type) {");
+        for (int i = 0; i < g7.size(); i++) {
+            String retorno = tipoVariavel.equals("Integer") ? g5.get(i) : "\"" + g5.get(i) + "\"";
+            builder.append("        case " + retorno + ":\r\n");
+            builder.append("return " + nomeClasse + "." + g7.get(i) + "; \r\n");
+        }
+
+        builder.append("default: \r\n")
+                .append("return null; \r\n")
+                .append("} \r\n")
+                .append("} \r\n")
+                .append("} \r\n");
 
         try {
-            arquivo = new FileWriter(new File("src/" + nameList + ".java"));
+            arquivo = new FileWriter(new File("src/converter/" + "Converter" + nomeClasse + ".java"));
             arquivo.write(builder.toString());
             arquivo.close();
         } catch (IOException e) {
@@ -94,7 +113,7 @@ public class RecebeCSVRetornaClass {
 
     public static void main(String[] args) {
 
-        RecebeCSVRetornaClass r = new RecebeCSVRetornaClass("Teste");
+        RecebeCSVRetornaClass r = new RecebeCSVRetornaClass();
 
     }
 
